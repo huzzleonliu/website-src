@@ -1,0 +1,246 @@
+use std::fs;
+use std::{thread, time};
+
+pub struct Letter{
+    pub shift:usize,
+    pub image:String,
+    pub letter:char,
+    pub uint8:u8,
+    pub bin:Vec<String>,
+    pub bin_graphic:Vec<String>,
+}
+
+impl Letter{
+    pub fn new(letter:&char)-> Letter{
+        let out:Letter = Letter {
+            shift: 0,
+            image:Self::genImage(letter),
+            letter:Self::genLetter(letter),
+            uint8:Self::genUint8(letter),
+            bin:Self::genBin(letter),
+            bin_graphic:Self::genBinGra(letter),
+        };
+        out
+    }
+
+    fn genImage(letter:&char)-> String{
+        let readFrom = (*letter as u32 - 65) * 8 + 0;
+        let contents = fs::read_to_string("text.txt")
+            .expect("can't find the text");
+
+        contents.lines()
+            .enumerate()
+            .filter_map(|(index, line)|{
+                if index >= (readFrom as usize) && index < (readFrom as usize + 8){
+                    Some(line.to_string())
+                }else{
+                    None
+                }
+            })
+        .collect::<Vec<String>>()
+            .join("\n")
+    }
+
+    fn genLetter(letter:&char) -> char {
+        let out:char = *letter;
+        out
+    }
+
+    fn genUint8(letter:&char)-> u8{
+        let out:u8 = *letter as u8;
+        out
+    }
+
+    fn genBin(letter:&char)-> Vec<String>{
+        let mut str_bin = String::from("0");
+        let bin:String = format!("{:b}",*letter as u8);
+        str_bin = str_bin + &bin;
+        let mut out:Vec<String> = Vec::new();
+
+        for i in str_bin.chars() {
+            out.push(i.to_string());
+        }
+        out
+    }
+
+    fn genBinGra(letter:&char)-> Vec<String>{
+        let bin_vec = Self::genBin(letter);
+        let mut out = Vec::new();
+        for i in bin_vec {
+            if i == "0" {
+                out.push(" ".to_string());
+            } else {
+                out.push("▇".to_string());
+            }
+        }
+        out
+    }
+
+    pub fn indexedLetter(oldOne:Letter, index:usize) -> Letter{
+        let output:Letter = Letter {
+            shift: index,
+            image:Self::indexedImage(oldOne.image, index),
+            letter:oldOne.letter,
+            uint8:oldOne.uint8,
+            bin:Self::indexedBin(&oldOne.bin, index),
+            bin_graphic:Self::indexedBinGra(&oldOne.bin, index),
+        };
+        output
+    }
+
+    fn indexedImage(old:String, indexed:usize) -> String{
+        let output = old.lines()
+            .enumerate()
+            .filter_map(|(index, line)|{
+                if index == indexed % 8{
+                    Some(line.to_string())
+                }else{
+                    None
+                }
+            })
+        .collect::<Vec<String>>()
+            .join("\n");
+        output
+    }
+
+    fn indexedBin(old:&Vec<String>, indexed:usize)-> Vec<String>{
+        let mut out: Vec<String> = Vec::new();
+        let len = old.len();
+        for (index, item) in old.iter().enumerate() {
+            let new_index = (index + indexed) % len; 
+            if out.len() <= new_index {
+                out.resize(new_index + 1, String::new());
+            }
+            out[new_index] = item.clone();
+        }
+        out.resize(len, String::from("0"));
+        out
+    }
+
+    fn indexedBinGra(old:&Vec<String>, indexed:usize)-> Vec<String>{
+        let len = old.len();
+        let mut out: Vec<String> = vec![String::new(); len]; 
+        for (index, item) in old.iter().enumerate() {
+            let new_index = (index + indexed) % len; 
+            let new_item = if item == "0" { " ".to_string() } else { "▇".to_string() };
+            out[new_index] = new_item;
+        }
+
+        out
+    }
+
+    pub fn recover(old:Letter) -> Letter {
+
+        let out:Letter = Letter {
+            shift: 0,
+            image:Self::genImage(&old.letter),
+            letter:Self::genLetter(&old.letter),
+            uint8:Self::genUint8(&old.letter),
+            bin:Self::genBin(&old.letter),
+            bin_graphic:Self::genBinGra(&old.letter),
+        };
+        out
+    }
+
+    pub fn derefer(old:&Letter)-> Letter{
+        let out:Letter = Letter {
+            shift: 0,
+            image:Self::genImage(&old.letter),
+            letter:Self::genLetter(&old.letter),
+            uint8:Self::genUint8(&old.letter),
+            bin:Self::genBin(&old.letter),
+            bin_graphic:Self::genBinGra(&old.letter),
+        };
+        out
+
+    }
+
+}
+
+pub fn outputString(vector: &Vec<String>) -> String{
+    let mut output:String = String::new();
+    for i in vector {
+        output = output + &i;
+    }
+    output
+}
+
+fn main() {
+    run3();
+
+}
+
+fn run1(){
+    let code = "OnceAndOnceAgain";
+    let mut sentence:Vec<Letter> = code.chars()
+        .map(|c| Letter::new(&c))
+        .collect();
+
+    let duration = time::Duration::from_millis(300);
+    loop {
+        for letter in &sentence {
+            for i in (0..8) {
+                let mut letterOut = Letter::derefer(letter);
+                letterOut = Letter::indexedLetter(letterOut, i);
+                println!("   INDEX: {} |{:12}| ASCII: {:3} | BINARY: {} | PATTERN: {}",
+                         letterOut.shift,
+                         letterOut.image,
+                         letterOut.uint8,
+                         outputString(&letterOut.bin),
+                         outputString(&letterOut.bin_graphic)
+                        );
+                thread::sleep(duration);
+            }
+            println!("--------------------------------------------------------------------------------");
+        }
+    }
+}
+
+fn run2(){
+
+    let code = "OnceAndOnceAgain";
+    let mut sentence:Vec<Letter> = code.chars()
+        .map(|c| Letter::new(&c))
+        .collect();
+
+    let duration = time::Duration::from_millis(10);
+    loop {
+        for letter in &sentence {
+            for i in (0..8) {
+                let mut letterOut = Letter::derefer(letter);
+                letterOut = Letter::indexedLetter(letterOut, i);
+                print!("{}",
+                         outputString(&letterOut.bin),
+                        );
+                thread::sleep(duration);
+            }
+            print!("\n");
+        }
+    }
+}
+
+
+fn run3(){
+
+    let code = "OnceAndOnceAgain";
+    let mut sentence:Vec<Letter> = code.chars()
+        .map(|c| Letter::new(&c))
+        .collect();
+
+    let duration = time::Duration::from_millis(10);
+    loop {
+        for letter in &sentence {
+            print!("{} |",letter.letter);
+            for i in (0..8) {
+                let mut letterOut = Letter::derefer(letter);
+                letterOut = Letter::indexedLetter(letterOut, i);
+                print!("{}",
+                         outputString(&letterOut.bin_graphic),
+                        );
+                thread::sleep(duration);
+            }
+            print!("\n");
+        }
+    }
+}
+
