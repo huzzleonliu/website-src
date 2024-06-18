@@ -1,0 +1,3 @@
+/home/huzz/Desktop/recentWork/20240131_OaOA_code/build/CMakeFiles/OaOA.dir
+/home/huzz/Desktop/recentWork/20240131_OaOA_code/build/CMakeFiles/edit_cache.dir
+/home/huzz/Desktop/recentWork/20240131_OaOA_code/build/CMakeFiles/rebuild_cache.dir
