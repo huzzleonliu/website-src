@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
+      <div className="z-20 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
             <Image
               src="/TempleProject/logo_0.svg"
               alt="The Temple Peoject Logo"
@@ -12,9 +12,9 @@ export default function Home() {
               height={100}
               priority
             />
-        <div className="fixed bottom-0 right-0 flex h-48 w-full items-start justify-end bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none justify-end">
+        <div className="fixed bottom-0 right-0 flex h-100 w-full items-start justify-end bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none justify-end">
           <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
+            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0 hover:invert"
             href="./TheTempleProject"
             target="_blank"
             rel="noopener noreferrer"
