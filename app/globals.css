@@ -31,3 +31,7 @@ body {
     text-wrap: balance;
   }
 }
+
+/* globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@400;700&display=swap');
+
